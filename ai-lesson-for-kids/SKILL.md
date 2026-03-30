@@ -2,9 +2,9 @@
 name: ai-lesson-for-kids
 description: >
   Run an interactive AI lesson for kids age 7-10 in a classroom setting. The teacher
-  collaborates live with an AI agent via a messaging app (e.g. Telegram): updating a
-  kid-friendly website in real-time, generating AI images from kids' handwritten prompts
-  using Gemini, and embedding a Teachable Machine webcam classifier.
+  collaborates live with Claude Code: updating a kid-friendly website in real-time,
+  generating AI images from kids' handwritten prompts using Gemini, and embedding a
+  Teachable Machine webcam classifier.
 ---
 
 # AI Lesson for Kids (Age 7-10)
@@ -18,10 +18,12 @@ and generate AI art — all appearing live on a class website.
   - `NETLIFY_AUTH_TOKEN` — for deploying the website
   - `GEMINI_API_KEY` — for AI image generation
 - **Tools:**
+  - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) v2.1.51+ (logged in via `claude /login`)
   - [Netlify CLI](https://docs.netlify.com/cli/get-started/) (`npm install -g netlify-cli`)
   - `curl`, `python3`, `bash`
 - **Hardware:**
   - Computer with webcam + projector for Teachable Machine demo
+  - Phone for remote-controlling Claude Code during class
 - **Printed materials:**
   - [CS Unplugged "Intelligent Paper"](https://www.cs4fn.org/teachers/activities/intelligentpaper/intelligentpaper.pdf) tic-tac-toe sheet
   - QR code for the site URL (so kids can show parents at home)
@@ -71,40 +73,46 @@ Generate a QR code for the site URL and print it — kids take it home with the 
 
 ## During the Lesson
 
-The teacher controls the lesson from their phone. If using an AI agent (e.g. OpenClaw),
-the agent responds to voice notes/messages and updates the website automatically. Without an agent,
-you can edit the HTML manually and redeploy — it takes ~10 seconds.
+The teacher controls the lesson **from their phone** using Claude Code's Remote Control feature.
+Claude Code runs on the laptop (connected to the projector), and the teacher sends instructions
+from their phone — Claude edits the HTML and redeploys automatically in ~5 seconds.
+
+### Start Remote Control (before class)
+
+```bash
+cd /path/to/ai-lesson-for-kids
+claude remote-control --name "AI Lesson"
+```
+
+A QR code appears in the terminal. Scan it with your phone → opens at claude.ai/code,
+connected to your running session. You now control Claude from your phone while walking
+around the classroom.
 
 ### Update a section
 
-Edit the corresponding `<div class="section">` in `index.html` with the kids' input, then redeploy:
+From your phone, type:
 
-```bash
-cd /tmp/ai-lesson-site
-npx netlify deploy --site YOUR_SITE_ID --dir=. --prod
-```
+> Update section 1 with: AI jest wtedy, gdy komputer wykonuje sprytne reguły
 
-Redeploy takes ~5 seconds. Kids refresh to see changes.
+Claude edits the HTML and redeploys. Kids refresh to see changes.
 
 ### Generate image from a kid's prompt
 
-1. Read (or photograph and transcribe) a kid's handwritten prompt
-2. Generate the image:
+From your phone, type:
 
-```bash
-./scripts/generate_image.sh "KIDS_PROMPT" /tmp/ai-lesson-site/galleryN.png
-```
+> Generate an image of a flying cat riding a rainbow and add it to the gallery as "Zosia's prompt"
 
-3. Add an `<img>` tag to the gallery section in `index.html` with the kid's name and prompt
-4. Redeploy
+Claude runs the Gemini script, adds the `<img>` tag, and redeploys.
 
 ### Embed Teachable Machine model
 
 1. During class, train a model at https://teachablemachine.withgoogle.com/train/image
 2. Export → Upload → copy the model URL
-3. Uncomment the Teachable Machine `<div>` and `<script>` sections in `index.html`
-4. Replace `YOUR_MODEL_ID` with the actual model URL
-5. Redeploy
+3. From your phone, type:
+
+> Uncomment the Teachable Machine section and set the model URL to https://teachablemachine.withgoogle.com/models/abc123/
+
+Claude uncomments the HTML/JS, sets the URL, and redeploys.
 
 ## Lesson Plan
 
@@ -139,15 +147,36 @@ Requires: `GEMINI_API_KEY` environment variable.
 - Budget at least 15 minutes for the gallery — it's the highlight
 - Have a kid be your assistant and follow the paper algorithm (makes it more fun)
 
-## Using with an AI Agent (Optional)
+## Using with Claude Code
 
-This skill is designed to work with [OpenClaw](https://github.com/openclaw/openclaw) or any
-AI agent that can edit files, run shell commands, and deploy websites. The agent acts as
-invisible infrastructure — the kids never see it, they just see the website updating.
+This skill is designed to work with [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
+and its **Remote Control** feature. Claude Code runs on your laptop and handles all file editing,
+image generation, and deployments — it acts as invisible infrastructure. The kids never see it,
+they just see the website updating.
 
-To use with OpenClaw:
-1. Copy this skill folder into your OpenClaw skills directory
-2. Set `NETLIFY_AUTH_TOKEN` and `GEMINI_API_KEY` in your `.env`
-3. During the lesson, send voice notes via Telegram — the agent handles edits + deploys
+### Before the lesson
 
-But the lesson works perfectly fine without any agent — just edit and deploy manually.
+1. Set `NETLIFY_AUTH_TOKEN` and `GEMINI_API_KEY` in your `.env`
+2. Open a terminal in this skill's directory
+3. Start remote control:
+   ```bash
+   claude remote-control --name "AI Lesson"
+   ```
+4. Scan the QR code with your phone — you're connected
+
+### During the lesson
+
+Type instructions from your phone. Claude handles everything on the laptop:
+
+- "Update section 1 with: AI is when a computer follows smart rules to solve problems"
+- "Generate an image of a flying cat riding a rainbow and add it to the gallery as 'Zosia's prompt'"
+- "Uncomment the Teachable Machine section and set the model URL to https://teachablemachine.withgoogle.com/models/abc123/"
+- "Redeploy the site"
+
+### Requirements
+
+- Claude Code v2.1.51+
+- Logged in via `claude /login` (claude.ai account, not API key)
+- Phone with a browser (no app install needed)
+
+The lesson also works without Claude Code — just edit HTML manually and deploy.

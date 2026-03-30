@@ -42,14 +42,14 @@ Full instructions in [SKILL.md](SKILL.md).
 - Paper and pencils for kids' prompts
 - ~45 minutes of class time
 
-## Works With or Without an AI Agent
+## Works With or Without Claude Code
 
-This skill is designed for [OpenClaw](https://github.com/openclaw/openclaw) but works perfectly
-fine without any AI platform. The instructions are human-readable, the scripts are standalone,
-and the HTML template has no dependencies.
+This skill is designed for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) using its
+**Remote Control** feature — start `claude remote-control` on your laptop, scan the QR code with
+your phone, and control the lesson from anywhere in the classroom.
 
-With an agent: send voice notes from your phone → agent edits + deploys automatically (~5 sec).
-Without an agent: edit HTML manually and run `npx netlify deploy` (~15 sec).
+With Claude Code: type instructions from your phone → Claude edits the HTML + deploys (~5 sec).
+Without Claude Code: edit HTML manually and run `npx netlify deploy` (~15 sec).
 
 ## Blog Post
 
